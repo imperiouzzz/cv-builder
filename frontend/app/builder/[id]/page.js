@@ -16,6 +16,32 @@ export default function BuilderPage() {
   const { token, cv, setCV } = useCVStore();
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    function applyScale() {
+      const w = window.innerWidth;
+      const app = document.getElementById("app");
+      if (!app) return;
+
+      if (w >= 1024) {
+        // Desktop — no scaling
+        app.style.transform = "";
+        app.style.width = "";
+        app.style.height = "";
+      } else {
+        // Calculate scale to fit the screen
+        const scale = w / 1280; // 1280 is the "designed for" width
+        app.style.transform = `scale(${scale})`;
+        app.style.transformOrigin = "top left";
+        app.style.width = `${100 / scale}%`;
+        app.style.height = `${100 / scale}vh`;
+      }
+    }
+
+    applyScale();
+    window.addEventListener("resize", applyScale);
+    return () => window.removeEventListener("resize", applyScale);
+  }, []);
+
   // Register global hooks
   useAutoSave();
   useAtsScore();
