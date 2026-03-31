@@ -27,9 +27,7 @@ const STEP_COMPONENTS = [
   VolunteeringStep, ProjectsStep, SkillsStep, ReferencesStep, CustomStep,
 ];
 
-interface Props { onExport: () => void; }
-
-export default function FormPanel({ onExport }: Props) {
+export default function FormPanel({ onExport }) {
   const { currentStep, setCurrentStep } = useCVStore();
   const [finished, setFinished]   = useState(false);
   const [showUpload, setShowUpload] = useState(false);
@@ -39,7 +37,7 @@ export default function FormPanel({ onExport }: Props) {
 
   const StepComponent = STEP_COMPONENTS[currentStep];
 
-  function isStepDone(cv: ReturnType<typeof useCVStore.getState>['cv'], i: number) {
+  function isStepDone(cv, i) {
     if (i === 0) return cv.fullName.length > 0;
     if (i === 1) return cv.summary.length > 0;
     if (i === 2) return cv.education.length > 0;
@@ -122,7 +120,7 @@ export default function FormPanel({ onExport }: Props) {
   );
 }
 
-function Btn({ children, onClick, primary }: { children: React.ReactNode; onClick: () => void; primary?: boolean }) {
+function Btn({ children, onClick, primary }) {
   return (
     <button onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6,

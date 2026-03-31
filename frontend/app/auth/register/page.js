@@ -16,7 +16,7 @@ export default function RegisterPage() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     if (password !== confirm) { setError('Passwords do not match.'); return; }
@@ -25,7 +25,7 @@ export default function RegisterPage() {
       const res = await authAPI.register(email, password);
       setAuth(res.data.user, res.data.token);
       router.replace('/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { useCVStore } from '@/store/cvStore';
-import { cvAPI } from '@/lib/api';
+import { useEffect, useRef, useCallback } from "react";
+import { useCVStore } from "@/store/cvStore";
+import { cvAPI } from "@/lib/api";
 
-const DEBOUNCE_MS = 1500;   // wait 1.5 s after last keystroke before saving
+const DEBOUNCE_MS = 1500; // wait 1.5 s after last keystroke before saving
 
 /**
  * Watches `cv` in the store for changes and auto-saves to the
@@ -12,7 +12,7 @@ const DEBOUNCE_MS = 1500;   // wait 1.5 s after last keystroke before saving
  */
 export function useAutoSave() {
   const { cv, isDirty, isSaving, setIsSaving, setCV } = useCVStore();
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef(null);
 
   const save = useCallback(async () => {
     if (!cv.id || isSaving) return;
@@ -22,7 +22,7 @@ export function useAutoSave() {
       // Merge back the server response (e.g. updated atsScore, updatedAt)
       setCV(res.data.data);
     } catch (err) {
-      console.error('[AutoSave] failed:', err);
+      console.error("[AutoSave] failed:", err);
     } finally {
       setIsSaving(false);
     }
@@ -32,6 +32,8 @@ export function useAutoSave() {
     if (!isDirty || !cv.id) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(save, DEBOUNCE_MS);
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [cv, isDirty, save]);
 }

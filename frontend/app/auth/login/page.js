@@ -15,14 +15,14 @@ export default function LoginPage() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
       const res = await authAPI.login(email, password);
       setAuth(res.data.user, res.data.token);
       router.replace('/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Check your credentials.');
     } finally {
       setLoading(false);

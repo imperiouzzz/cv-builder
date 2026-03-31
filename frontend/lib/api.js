@@ -1,5 +1,4 @@
 import axios from "axios";
-import type { CVData } from "@/types/cv.types";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
@@ -36,10 +35,9 @@ api.interceptors.response.use(
 
 // ── Auth ─────────────────────────────────────────────────────
 export const authAPI = {
-  register: (email: string, password: string) =>
+  register: (email, password) =>
     api.post("/auth/register", { email, password }),
-  login: (email: string, password: string) =>
-    api.post("/auth/login", { email, password }),
+  login: (email, password) => api.post("/auth/login", { email, password }),
   getMe: () => api.get("/auth/me"),
   logout: () => api.post("/auth/logout"),
 };
@@ -47,17 +45,17 @@ export const authAPI = {
 // ── CVs ──────────────────────────────────────────────────────
 export const cvAPI = {
   list: () => api.get("/cvs"),
-  get: (id: string) => api.get(`/cvs/${id}`),
-  create: (title?: string) => api.post("/cvs", { title }),
-  save: (id: string, data: Partial<CVData>) => api.put(`/cvs/${id}`, data),
-  delete: (id: string) => api.delete(`/cvs/${id}`),
-  duplicate: (id: string) => api.post(`/cvs/${id}/duplicate`),
+  get: (id) => api.get(`/cvs/${id}`),
+  create: (title) => api.post("/cvs", { title }),
+  save: (id, data) => api.put(`/cvs/${id}`, data),
+  delete: (id) => api.delete(`/cvs/${id}`),
+  duplicate: (id) => api.post(`/cvs/${id}/duplicate`),
 };
 
 // ── ATS ───────────────────────────────────────────────────────
 export const atsAPI = {
-  score: (cvId: string) => api.post(`/ats/score/${cvId}`),
-  match: (cvId: string, jobDescription: string) =>
+  score: (cvId) => api.post(`/ats/score/${cvId}`),
+  match: (cvId, jobDescription) =>
     api.post(`/ats/match/${cvId}`, { jobDescription }),
 };
 
@@ -68,7 +66,7 @@ export const pdfAPI = {
    * The blob URL is kept alive long enough for the browser to trigger
    * the download before being released.
    */
-  download: async (cvId: string): Promise<void> => {
+  download: async (cvId) => {
     try {
       const res = await api.get(`/pdf/${cvId}`, {
         responseType: "blob",
@@ -78,7 +76,7 @@ export const pdfAPI = {
       const contentType = res.headers["content-type"] || "";
       if (!contentType.includes("pdf")) {
         // Backend returned an error JSON as a blob — decode and show it
-        const text = await (res.data as Blob).text();
+        const text = await res.data.text();
         let msg = "PDF generation failed.";
         try {
           msg = JSON.parse(text).message || msg;
@@ -101,10 +99,9 @@ export const pdfAPI = {
 
       // Revoke after 10 seconds — long enough for any browser to start the download
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
-    } catch (err: unknown) {
+    } catch (err) {
       console.error("[PDF Download]", err);
-      const message = (err as { response?: { data?: { message?: string } } })
-        ?.response?.data?.message;
+      const message = err?.response?.data?.message;
       alert(
         message ||
           "Could not generate PDF. Make sure the backend server is running.",
@@ -116,7 +113,7 @@ export const pdfAPI = {
    * Opens the CV as a PDF in a new browser tab.
    * Useful as an alternative if the download prompt is blocked.
    */
-  openInTab: async (cvId: string): Promise<void> => {
+  openInTab: async (cvId) => {
     const res = await api.get(`/pdf/${cvId}`, { responseType: "blob" });
     const blob = new Blob([res.data], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);

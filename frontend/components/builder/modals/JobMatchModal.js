@@ -1,23 +1,13 @@
 "use client";
-import type React from "react";
 import { useState } from "react";
 import { useCVStore } from "@/store/cvStore";
 import { atsAPI } from "@/lib/api";
-import type { CVData } from "@/types/cv.types";
 
-interface Props {
-  onClose: () => void;
-}
-
-export default function JobMatchModal({ onClose }: Props) {
+export default function JobMatchModal({ onClose }) {
   const { cv, setMatchResult } = useCVStore();
   const [jd, setJd] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{
-    score: number;
-    matched: string[];
-    missing: string[];
-  } | null>(null);
+  const [result, setResult] = useState(null);
   const [error, setError] = useState("");
 
   async function handleAnalyse() {
@@ -47,7 +37,7 @@ export default function JobMatchModal({ onClose }: Props) {
     }
   }
 
-  const scoreColor = (s: number) =>
+  const scoreColor = (s) =>
     s >= 70 ? "#38A169" : s >= 40 ? "#D69E2E" : "#E53E3E";
 
   return (
@@ -294,17 +284,7 @@ export default function JobMatchModal({ onClose }: Props) {
   );
 }
 
-function Btn({
-  children,
-  onClick,
-  primary,
-  disabled,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  primary?: boolean;
-  disabled?: boolean;
-}) {
+function Btn({ children, onClick, primary, disabled }) {
   return (
     <button
       onClick={onClick}
@@ -328,7 +308,7 @@ function Btn({
 }
 
 // ── Local keyword match (used when CV has no id yet) ──────────
-function localMatch(cv: CVData, jd: string) {
+function localMatch(cv, jd) {
   const cvText = [
     cv.summary,
     cv.jobTitle,

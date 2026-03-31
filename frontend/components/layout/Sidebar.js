@@ -16,10 +16,7 @@ const STEPS = [
   "Custom",
 ];
 
-function isStepDone(
-  cv: ReturnType<typeof useCVStore.getState>["cv"],
-  i: number,
-): boolean {
+function isStepDone(cv, i) {
   if (i === 0) return cv.fullName.length > 0;
   if (i === 1) return cv.summary.length > 0;
   if (i === 2) return cv.education.length > 0;
@@ -35,7 +32,7 @@ export default function Sidebar() {
   const { cv, currentStep, setCurrentStep, breakdown, isSaving } = useCVStore();
 
   // Job Match modal is controlled locally — no need to touch global mode state
-  const [activeTab, setActiveTab] = useState<"quality" | "match">("quality");
+  const [activeTab, setActiveTab] = useState("quality");
   const [showJobMatch, setShowJobMatch] = useState(false);
 
   const score = breakdown.total;
@@ -53,11 +50,11 @@ export default function Sidebar() {
             ? "Strong CV"
             : "Excellent!";
 
-  const barColor = (val: number, max: number) =>
+  const barColor = (val, max) =>
     val / max > 0.6 ? "#38A169" : val / max > 0.3 ? "#D69E2E" : "#E53E3E";
 
   // When user clicks "Job Match" tab, open the modal immediately
-  function handleTabClick(tab: "quality" | "match") {
+  function handleTabClick(tab) {
     setActiveTab(tab);
     if (tab === "match") setShowJobMatch(true);
   }
@@ -151,7 +148,7 @@ export default function Sidebar() {
               gap: 2,
             }}
           >
-            {(["quality", "match"] as const).map((tab) => (
+            {["quality", "match"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleTabClick(tab)}

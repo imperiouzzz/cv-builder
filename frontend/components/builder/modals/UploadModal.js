@@ -3,25 +3,23 @@ import { useState, useRef } from 'react';
 import { useCVStore } from '@/store/cvStore';
 import { parseCV } from '@/lib/cvParser';
 
-interface Props { onClose: () => void; }
-
-export default function UploadModal({ onClose }: Props) {
+export default function UploadModal({ onClose }) {
   const setCV = useCVStore(s => s.setCV);
   const cv    = useCVStore(s => s.cv);
-  const [status, setStatus] = useState<'idle' | 'reading' | 'done' | 'error'>('idle');
-  const [filled, setFilled]  = useState<string[]>([]);
+  const [status, setStatus] = useState('idle');
+  const [filled, setFilled]  = useState([]);
   const [error, setError]    = useState('');
   const [dragging, setDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef(null);
 
-  function processFile(file: File) {
+  function processFile(file) {
     if (!file) return;
     setStatus('reading');
     setError('');
     const reader = new FileReader();
     reader.onload = e => {
       try {
-        let raw = (e.target?.result as string) || '';
+        let raw = (e.target?.result) || '';
         // Strip PDF/binary noise, keep printable chars
         raw = raw
           .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, ' ')
@@ -32,17 +30,17 @@ export default function UploadModal({ onClose }: Props) {
         const { data, filled: f } = parseCV(raw);
         // Merge parsed data into current CV (don't overwrite existing non-empty fields)
         const merged = { ...cv };
-        (Object.keys(data) as Array<keyof typeof data>).forEach(key => {
+        (Object.keys(data)).forEach(key => {
           const val = data[key];
           if (Array.isArray(val)) {
-            if ((merged[key] as unknown[]).length === 0 && val.length > 0) {
-              (merged as Record<string, unknown>)[key] = val;
+            if ((merged[key]).length === 0 && val.length > 0) {
+              (merged)[key] = val;
             }
           } else if (typeof val === 'string' && val) {
-            if (!(merged[key] as string)) (merged as Record<string, unknown>)[key] = val;
+            if (!(merged[key])) (merged)[key] = val;
           }
         });
-        setCV(merged as typeof cv);
+        setCV(merged);
         setFilled(f);
         setStatus('done');
       } catch (err) {
@@ -54,12 +52,12 @@ export default function UploadModal({ onClose }: Props) {
     reader.readAsText(file, 'utf-8');
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (file) processFile(file);
   }
 
-  function handleDrop(e: React.DragEvent) {
+  function handleDrop(e) {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files?.[0];

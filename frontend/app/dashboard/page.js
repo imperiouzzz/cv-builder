@@ -5,18 +5,10 @@ import { useRouter } from 'next/navigation';
 import { cvAPI } from '@/lib/api';
 import { useCVStore } from '@/store/cvStore';
 
-interface CVSummary {
-  id: string;
-  title: string;
-  atsScore: number;
-  template: string;
-  updatedAt: string;
-}
-
 export default function DashboardPage() {
   const router   = useRouter();
   const { token, clearAuth, setCV, resetCV } = useCVStore();
-  const [cvs, setCvs]       = useState<CVSummary[]>([]);
+  const [cvs, setCvs]       = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +30,7 @@ export default function DashboardPage() {
     }
   }
 
-  async function handleOpen(cv: CVSummary) {
+  async function handleOpen(cv) {
     try {
       const res = await cvAPI.get(cv.id);
       setCV(res.data.data);
@@ -46,7 +38,7 @@ export default function DashboardPage() {
     } catch (err) { console.error(err); }
   }
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id) {
     if (!confirm('Delete this CV?')) return;
     await cvAPI.delete(id);
     setCvs(prev => prev.filter(c => c.id !== id));
@@ -57,7 +49,7 @@ export default function DashboardPage() {
     router.replace('/auth/login');
   }
 
-  const scoreColor = (s: number) =>
+  const scoreColor = (s) =>
     s >= 70 ? '#38A169' : s >= 40 ? '#D69E2E' : '#E53E3E';
 
   return (

@@ -12,9 +12,7 @@
  * this file. The constructor and addImage API changed in v3+.
  */
 
-import type { CVData } from '@/types/cv.types';
-
-export async function downloadPDFFallback(cv: CVData): Promise<void> {
+export async function downloadPDFFallback(cv) {
   // Dynamically import to avoid SSR issues (Next.js server has no DOM)
   const [jspdfModule, { default: html2canvas }] = await Promise.all([
     import('jspdf'),

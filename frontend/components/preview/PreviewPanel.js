@@ -1,12 +1,8 @@
 "use client";
 
 import { useCVStore } from "@/store/cvStore";
-import type { SectionKey } from "@/types/cv.types";
 
-const FONTS: Record<
-  string,
-  { bodyFamily: string; nameFamily: string; googleUrl: string }
-> = {
+const FONTS = {
   sans: {
     bodyFamily: "'DM Sans', Arial, sans-serif",
     nameFamily: "'Fraunces', serif",
@@ -27,7 +23,7 @@ const FONTS: Record<
   },
 };
 
-const DEFAULT_ORDER: SectionKey[] = [
+const DEFAULT_ORDER = [
   "summary",
   "education",
   "work",
@@ -38,12 +34,12 @@ const DEFAULT_ORDER: SectionKey[] = [
   "custom",
 ];
 
-function parseSectionOrder(raw: unknown): SectionKey[] {
-  if (Array.isArray(raw) && raw.length > 0) return raw as SectionKey[];
+function parseSectionOrder(raw) {
+  if (Array.isArray(raw) && raw.length > 0) return raw;
   if (typeof raw === "string") {
     try {
       const p = JSON.parse(raw);
-      if (Array.isArray(p) && p.length > 0) return p as SectionKey[];
+      if (Array.isArray(p) && p.length > 0) return p;
     } catch (_) {}
   }
   return DEFAULT_ORDER;
@@ -57,7 +53,7 @@ export default function PreviewPanel() {
   const font = FONTS[fontKey] ?? FONTS.sans;
   const order = parseSectionOrder(cv.sectionOrder);
 
-  const esc = (s: string | undefined | null) =>
+  const esc = (s) =>
     String(s || "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -73,12 +69,12 @@ export default function PreviewPanel() {
 
   const bt = `font-family:${font.bodyFamily}`; // shorthand body-text style
 
-  function sec(title: string, content: string) {
+  function sec(title, content) {
     return `<div style="margin-bottom:10px"><div style="${sTitle}">${title}</div>${content}</div>`;
   }
 
   // ── Section renderers keyed by SectionKey ──────────────────
-  const renderSection: Record<SectionKey, () => string> = {
+  const renderSection = {
     summary: () =>
       cv.summary
         ? sec(
@@ -99,9 +95,9 @@ export default function PreviewPanel() {
             <span style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(e.degree)}</span>
             <span style="font-size:7.5px;color:#718096;${bt}">${esc(e.startDate)}${e.endDate ? " – " + esc(e.endDate) : ""}</span>
           </div>
-          <div style="font-size:8px;color:#718096;${bt}">${esc(e.institution)}${e.location ? ", " + esc(e.location) : ""}</div>
-          ${e.gpa ? `<div style="font-size:7.5px;color:#2D3748;${bt}">GPA: ${esc(e.gpa)}</div>` : ""}
-          ${e.achievements ? `<div style="font-size:7.5px;color:#2D3748;${bt}">${esc(e.achievements)}</div>` : ""}
+          <div style="font-size:7.5px;color:#718096;margin-bottom:2px;${bt}">${esc(e.institution)}${e.location ? ", " + esc(e.location) : ""}</div>
+          ${e.gpa ? `<div style="font-size:7px;color:#2D3748;${bt}">${esc(e.gpa)}</div>` : ""}
+          ${e.achievements ? `<div style="font-size:7px;color:#2D3748;margin-top:2px;${bt}">${esc(e.achievements)}</div>` : ""}
         </div>`,
               )
               .join(""),
@@ -114,14 +110,14 @@ export default function PreviewPanel() {
             "Work Experience",
             cv.workExp
               .map(
-                (e) => `
-        <div style="margin-bottom:6px">
+                (w) => `
+        <div style="margin-bottom:8px">
           <div style="display:flex;justify-content:space-between">
-            <span style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(e.title)}</span>
-            <span style="font-size:7.5px;color:#718096;${bt}">${esc(e.startDate)}${e.endDate ? " – " + esc(e.endDate) : ""}</span>
+            <span style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(w.title)}</span>
+            <span style="font-size:7.5px;color:#718096;${bt}">${esc(w.startDate)}${w.endDate ? " – " + esc(w.endDate) : ""}</span>
           </div>
-          <div style="font-size:8px;color:#718096;${bt}">${esc(e.company)}${e.location ? ", " + esc(e.location) : ""}</div>
-          ${e.description ? `<div style="font-size:7.5px;color:#2D3748;line-height:1.5;white-space:pre-line;${bt}">${esc(e.description)}</div>` : ""}
+          <div style="font-size:7.5px;color:#718096;margin-bottom:2px;${bt}">${esc(w.company)}${w.location ? ", " + esc(w.location) : ""}</div>
+          <div style="font-size:7.5px;color:#2D3748;white-space:pre-line;${bt}">${esc(w.description)}</div>
         </div>`,
               )
               .join(""),
@@ -131,17 +127,18 @@ export default function PreviewPanel() {
     projects: () =>
       cv.projects.length
         ? sec(
-            "Projects &amp; Research",
+            "Projects & Research",
             cv.projects
               .map(
-                (e) => `
+                (p) => `
         <div style="margin-bottom:6px">
           <div style="display:flex;justify-content:space-between">
-            <span style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(e.name)}</span>
-            <span style="font-size:7.5px;color:#718096;${bt}">${esc(e.period)}</span>
+            <span style="font-weight:600;font-size:8px;color:#1A1A2E;${bt}">${esc(p.name)}</span>
+            <span style="font-size:7px;color:#718096;${bt}">${esc(p.period)}</span>
           </div>
-          ${e.tech ? `<div style="font-size:8px;color:#718096;${bt}">${esc(e.tech)}</div>` : ""}
-          ${e.description ? `<div style="font-size:7.5px;color:#2D3748;${bt}">${esc(e.description)}</div>` : ""}
+          <div style="font-size:7px;color:#718096;margin-bottom:2px;${bt}">${esc(p.tech)}</div>
+          <div style="font-size:7px;color:#2D3748;white-space:pre-line;${bt}">${esc(p.description)}</div>
+          ${p.link ? `<div style="font-size:6.5px;color:#E53E3E;margin-top:2px;${bt}">${esc(p.link)}</div>` : ""}
         </div>`,
               )
               .join(""),
@@ -154,14 +151,14 @@ export default function PreviewPanel() {
             "Volunteering",
             cv.volunteering
               .map(
-                (e) => `
+                (v) => `
         <div style="margin-bottom:6px">
           <div style="display:flex;justify-content:space-between">
-            <span style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(e.role)}</span>
-            <span style="font-size:7.5px;color:#718096;${bt}">${esc(e.period)}</span>
+            <span style="font-weight:600;font-size:8px;color:#1A1A2E;${bt}">${esc(v.role)}</span>
+            <span style="font-size:7px;color:#718096;${bt}">${esc(v.period)}</span>
           </div>
-          <div style="font-size:8px;color:#718096;${bt}">${esc(e.org)}</div>
-          ${e.desc ? `<div style="font-size:7.5px;color:#2D3748;${bt}">${esc(e.desc)}</div>` : ""}
+          <div style="font-size:7px;color:#718096;margin-bottom:2px;${bt}">${esc(v.org)}</div>
+          <div style="font-size:7px;color:#2D3748;${bt}">${esc(v.desc)}</div>
         </div>`,
               )
               .join(""),
@@ -173,8 +170,13 @@ export default function PreviewPanel() {
         ? sec(
             "Skills",
             `<div style="display:flex;flex-wrap:wrap;gap:4px">
-        ${cv.skills.map((s) => `<span style="padding:2px 7px;background:#FFF5F5;color:#C53030;border-radius:10px;font-size:7.5px;font-weight:500;${bt}">${esc(s.name)}</span>`).join("")}
-      </div>`,
+          ${cv.skills
+            .map(
+              (s) =>
+                `<span style="font-size:7px;color:#2D3748;background:#F7FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:2px 6px;${bt}">${esc(s.name)}</span>`,
+            )
+            .join("")}
+        </div>`,
           )
         : "",
 
@@ -184,12 +186,11 @@ export default function PreviewPanel() {
             "References",
             cv.references
               .map(
-                (e) => `
+                (r) => `
         <div style="margin-bottom:6px">
-          <div style="font-weight:600;font-size:8.5px;color:#1A1A2E;${bt}">${esc(e.name)}</div>
-          <div style="font-size:8px;color:#718096;${bt}">${esc(e.title)}${e.org ? ", " + esc(e.org) : ""}</div>
-          ${e.email ? `<div style="font-size:7.5px;color:#2D3748;${bt}">✉ ${esc(e.email)}</div>` : ""}
-          ${e.phone ? `<div style="font-size:7.5px;color:#2D3748;${bt}">📞 ${esc(e.phone)}</div>` : ""}
+          <div style="font-weight:600;font-size:8px;color:#1A1A2E;${bt}">${esc(r.name)}</div>
+          <div style="font-size:7px;color:#718096;margin-bottom:1px;${bt}">${esc(r.title)}, ${esc(r.org)}</div>
+          <div style="font-size:7px;color:#2D3748;${bt}">${esc(r.email)} | ${esc(r.phone)}</div>
         </div>`,
               )
               .join(""),
@@ -268,7 +269,7 @@ export default function PreviewPanel() {
           Live Preview
         </span>
         <div style={{ display: "flex", gap: 4 }}>
-          {(["classic", "modern"] as const).map((t) => (
+          {["classic", "modern"].map((t) => (
             <button
               key={t}
               onClick={() => setCVField("template", t)}
@@ -310,25 +311,21 @@ export default function PreviewPanel() {
 
       {/* Preview */}
       <div
-        id="cv-preview"
         style={{
           flex: 1,
-          overflowY: "auto",
-          background: "#F7FAFC",
-          padding: "14px 10px",
+          overflow: "auto",
+          background: "#F8FAFC",
         }}
       >
-        <div
+        <iframe
           style={{
+            width: "100%",
+            height: "100%",
+            border: "none",
             background: "white",
-            minHeight: 360,
-            borderRadius: 4,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            overflow: "hidden",
-            fontSize: 9,
-            lineHeight: 1.4,
           }}
-          dangerouslySetInnerHTML={{ __html: previewHTML }}
+          srcDoc={previewHTML}
+          title="Resume Preview"
         />
       </div>
     </aside>

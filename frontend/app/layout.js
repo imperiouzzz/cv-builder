@@ -1,12 +1,11 @@
-import type { Metadata } from 'next';
 import './globals.css';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'CV Builder — Group 30 KNUST',
   description: 'Build a professional, ATS-optimized CV in minutes.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>{children}</body>
