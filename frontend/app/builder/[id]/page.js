@@ -27,6 +27,8 @@ export default function BuilderPage() {
         app.style.transform = "";
         app.style.width = "";
         app.style.height = "";
+        document.body.style.overflow = "";
+        document.body.style.height = "";
       } else {
         // Calculate scale to fit the screen
         const scale = w / 1280; // 1280 is the "designed for" width
@@ -34,6 +36,8 @@ export default function BuilderPage() {
         app.style.transformOrigin = "top left";
         app.style.width = `${100 / scale}%`;
         app.style.height = `${100 / scale}vh`;
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
       }
     }
 
