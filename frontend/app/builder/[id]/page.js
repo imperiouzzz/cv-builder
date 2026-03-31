@@ -13,7 +13,7 @@ import PreviewPanel from "@/components/preview/PreviewPanel";
 export default function BuilderPage() {
   const params = useParams();
   const router = useRouter();
-  const { token, cv, setCV, isSaving } = useCVStore();
+  const { token, cv, setCV } = useCVStore();
   const [loading, setLoading] = useState(true);
 
   // Register global hooks
@@ -59,6 +59,7 @@ export default function BuilderPage() {
 
   return (
     <div
+      id="app"
       style={{
         display: "flex",
         height: "100vh",
