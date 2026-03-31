@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "CV Builder REST API — Group 30 KNUST",
   "main": "src/index.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "start": "npx prisma migrate deploy && node src/index.js",
+    "postinstall": "prisma generate",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "db:migrate": "npx prisma migrate dev",
@@ -25,13 +29,13 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "prisma": "^5.22.0",
     "puppeteer": "^23.11.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.1.9",
-    "prisma": "^5.22.0",
     "supertest": "^7.0.0"
   },
   "jest": {
